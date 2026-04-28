@@ -5,11 +5,14 @@ import { createContext, useContext, useState, useCallback } from "react";
 
 const AppContext = createContext(null);
 
+const url = process.env.NEXT_PUBLIC_API_URL;
+
+
 export function AppProvider({ children }) {
   
   const signup = useCallback(async(name, email, password, ship_address, role) => {
     try {
-      const response = await fetch("http://localhost:5000/api/auth/signup", {
+      const response = await fetch(`${url}/api/auth/signup`, {
         method: "POST", body: JSON.stringify({ name, email, passwordHash: password, role }), headers: {
           "Content-Type": "application/json"
         }

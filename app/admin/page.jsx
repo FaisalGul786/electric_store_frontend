@@ -9,6 +9,8 @@ import { useAuth } from '@/context/AuthContext'
 import { api } from '@/lib/api'
 
 export default function AdminDashboard() {
+const url = process.env.NEXT_PUBLIC_API_URL;
+
   // const { user, isLoading: isAuthLoading } = useAuth()
   const [activeTab, setActiveTab] = useState('products')
   const [products, setProducts] = useState([])
@@ -79,7 +81,7 @@ export default function AdminDashboard() {
         const uploadFormData = new FormData()
         uploadFormData.append('image', formData.image)
 	      console.log("form data ... ", uploadFormData)
-        const uploadRes = await fetch('http://localhost:5000/api/image/upload', {
+        const uploadRes = await fetch(`${url}/api/image/upload`, {
           method: 'POST',
           body: uploadFormData,
           credentials: 'include'
