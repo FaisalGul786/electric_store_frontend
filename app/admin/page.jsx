@@ -9,7 +9,9 @@ import { useAuth } from '@/context/AuthContext'
 import { api } from '@/lib/api'
 
 export default function AdminDashboard() {
-  const { user, isLoading: isAuthLoading } = useAuth()
+const url = process.env.NEXT_PUBLIC_API_URL;
+
+  // const { user, isLoading: isAuthLoading } = useAuth()
   const [activeTab, setActiveTab] = useState('products')
   const [products, setProducts] = useState([])
   const [orders, setOrders] = useState([])
@@ -18,15 +20,43 @@ export default function AdminDashboard() {
   const [isSubmitting, setIsSubmitting] = useState(false)
 
   useEffect(() => {
-    if (isAuthLoading) return
+    //  if (isAuthLoading) return
 
+     const loadData = async () => {
+       try {
+         const [productsData, ordersData] = await Promise.all([
+           api.fetchProducts(),
+           api.getAllOrders(),
+         ])
+         setProducts(productsData)
+         setOrders(ordersData)
+       } catch (error) {
+         console.error('Failed to load admin data:', error)
+       } finally {
+         setIsLoading(false)
+       }
+     }
+     loadData()
+
+/**
     const loadData = async () => {
       try {
-        const [productsData, ordersData] = await Promise.all([
-          api.getProducts(),
-          api.getAllOrders(),
-        ])
-        setProducts(productsData)
+        const productData = await api.fetchProducts()
+        console.log('product data from database . ',productData)
+        setProducts(productData)
+      } catch (error) {
+        console.error('Failed to load admin data:', error)
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    // # orders Data
+    const ordersData = async () => {
+      try {
+        
+        const ordersData = await api.getAllOrders()
+        console.log('orders data from database . ',ordersData)
         setOrders(ordersData)
       } catch (error) {
         console.error('Failed to load admin data:', error)
@@ -36,9 +66,12 @@ export default function AdminDashboard() {
     }
 
     loadData()
-  }, [isAuthLoading])
+    ordersData()
+    **/
+  }, [])
 
   const handleAddProduct = async (formData) => {
+    console.log('product data ... ', formData);
     setIsSubmitting(true)
     try {
       let imageUrl = null
@@ -47,15 +80,17 @@ export default function AdminDashboard() {
       if (formData.image) {
         const uploadFormData = new FormData()
         uploadFormData.append('image', formData.image)
-
-        const uploadRes = await fetch('/api/upload', {
+	      console.log("form data ... ", uploadFormData)
+        const uploadRes = await fetch(`${url}/api/image/upload`, {
           method: 'POST',
           body: uploadFormData,
+          credentials: 'include'
         })
 
         if (!uploadRes.ok) {
           const error = await uploadRes.json()
           throw new Error(error.error || 'Failed to upload image')
+          return;
         }
 
         const { url } = await uploadRes.json()
@@ -70,11 +105,17 @@ export default function AdminDashboard() {
         inStock: formData.inStock,
         rating: formData.rating,
         reviews: formData.reviews,
-        image: imageUrl,
-        id: Date.now().toString(),
-        createdAt: new Date().toISOString(),
+        image: imageUrl
+        
       })
-      setProducts((prev) => [...prev, newProduct])
+      {/**console.log('newProduct ... ', newProduct) **/}
+      {/**setProducts((prev) => [...prev, newProduct]) **/}
+      console.log('Current state before update:', products);
+setProducts((prev) => {
+  const updatedList = [...prev, newProduct[0]];
+  console.log('New state after update:', updatedList);
+  return updatedList;
+});
       setIsModalOpen(false)
       alert('Product added successfully!')
     } catch (error) {
@@ -85,7 +126,7 @@ export default function AdminDashboard() {
     }
   }
 
-  if (isAuthLoading || isLoading) {
+  if (isLoading) {
     return (
       <>
         <Header />
@@ -98,7 +139,7 @@ export default function AdminDashboard() {
     )
   }
 
-  if (!user || user.role !== 'admin') {
+   {/* if (!user || user.role !== 'admin') {
     return (
       <>
         <Header />
@@ -121,6 +162,7 @@ export default function AdminDashboard() {
     )
   }
 
+*/ }
   return (
     <>
       <Header />
@@ -128,7 +170,7 @@ export default function AdminDashboard() {
         <div className="mb-8 flex justify-between items-start">
           <div>
             <h1 className="text-3xl font-bold">Admin Dashboard</h1>
-            <p className="text-muted-foreground mt-2">Welcome back, {user.name}. Manage your store here.</p>
+            <p className="text-muted-foreground mt-2">Welcome back, Owner. Manage your store here.</p>
           </div>
           <Link
             href="/products"
@@ -151,7 +193,7 @@ export default function AdminDashboard() {
           <div className="border border-border rounded-lg p-6 bg-card">
             <p className="text-sm text-muted-foreground">Total Revenue</p>
             <p className="text-3xl font-bold mt-2">
-              ${orders.reduce((sum, order) => sum + order.totalPrice, 0).toFixed(2)}
+             {/* ${orders.reduce((sum, order) => sum + order.totalPrice, 0).toFixed(2)}*/}
             </p>
           </div>
           <div className="border border-border rounded-lg p-6 bg-card">
@@ -220,12 +262,12 @@ export default function AdminDashboard() {
                   <tbody>
                     {products.map((product, index) => (
                       <tr
-                        key={product.id}
+                        key={index}
                         className={index > 0 ? 'border-t border-border' : ''}
                       >
                         <td className="px-6 py-4">{product.name}</td>
                         <td className="px-6 py-4 text-muted-foreground">{product.category}</td>
-                        <td className="px-6 py-4 font-semibold">${product.price.toFixed(2)}</td>
+                        <td className="px-6 py-4 font-semibold">${product.price}</td>
                         <td className="px-6 py-4">
                           <span
                             className={`px-2 py-1 rounded text-xs font-semibold ${
@@ -286,7 +328,7 @@ export default function AdminDashboard() {
                       >
                         <td className="px-6 py-4 font-mono text-sm">{order.id}</td>
                         <td className="px-6 py-4 text-sm">
-                          {new Date(order.createdAt).toLocaleDateString()}
+                          {new Date(order.orderDate).toLocaleDateString()}
                         </td>
                         <td className="px-6 py-4 text-sm">{order.items.length} items</td>
                         <td className="px-6 py-4 font-semibold">${order.totalPrice.toFixed(2)}</td>

@@ -20,8 +20,9 @@ export default function ProductPage({ params }) {
     const loadProduct = async () => {
       setIsLoading(true)
       try {
-        const data = await api.getProductById(id)
-        setProduct(data)
+        const data = await api.getDetailsProductById(id)
+        console.log('data .. ',data)
+        setProduct(data[0])
       } catch (error) {
         console.error('Failed to load product:', error)
       } finally {
@@ -124,7 +125,7 @@ export default function ProductPage({ params }) {
 
             {/* Price */}
             <div className="mt-6">
-              <p className="text-4xl font-bold">${product.price.toFixed(2)}</p>
+              <p className="text-4xl font-bold">${product.price}</p>
               <p className="mt-2 text-sm text-muted-foreground">
                 {product.inStock ? (
                   <span className="text-accent">✓ In Stock</span>

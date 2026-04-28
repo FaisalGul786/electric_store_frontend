@@ -8,6 +8,7 @@ export function AuthProvider({ children }) {
   const [user, setUser] = useState(null)
   const [isLoading, setIsLoading] = useState(true)
 
+{/**
   useEffect(() => {
     // Check if user is logged in on mount
     const storedUser = localStorage.getItem('user')
@@ -16,10 +17,12 @@ export function AuthProvider({ children }) {
     }
     setIsLoading(false)
   }, [])
+**/}
 
   const login = (userData) => {
+    console.log("user data ... ", userData)
     setUser(userData)
-    localStorage.setItem('user', JSON.stringify(userData))
+    // localStorage.setItem('user', JSON.stringify(userData))
   }
 
   const logout = () => {

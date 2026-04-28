@@ -13,7 +13,7 @@ export default function OrdersPage() {
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
-    if (isAuthLoading) return
+    
 
     if (!user) {
       setIsLoading(false)
@@ -23,6 +23,7 @@ export default function OrdersPage() {
     const loadOrders = async () => {
       try {
         const data = await api.getOrders(user.id)
+        console.log('customer all data placed .', data)
         setOrders(data)
       } catch (error) {
         console.error('Failed to load orders:', error)
@@ -32,9 +33,9 @@ export default function OrdersPage() {
     }
 
     loadOrders()
-  }, [user, isAuthLoading])
+  }, [user])
 
-  if (isAuthLoading || isLoading) {
+  if (isLoading) {
     return (
       <>
         <Header />
@@ -101,16 +102,16 @@ export default function OrdersPage() {
                     <div>
                       <p className="text-sm text-muted-foreground">Date</p>
                       <p className="font-semibold">
-                        {new Date(order.createdAt).toLocaleDateString()}
+                        {new Date(order.orderDate).toLocaleDateString()}
                       </p>
                     </div>
                     <div>
                       <p className="text-sm text-muted-foreground">Total</p>
-                      <p className="font-semibold">${order.totalPrice.toFixed(2)}</p>
+                      <p className="font-semibold">${parseFloat(order.totalPrice).toFixed(2)}</p>
                     </div>
                     <div className="flex justify-between items-center">
                       <span className="inline-block px-3 py-1 rounded-full bg-accent/20 text-accent text-xs font-semibold capitalize">
-                        {order.status}
+                        {order.orderStatus}
                       </span>
                     </div>
                   </div>

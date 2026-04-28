@@ -79,9 +79,15 @@ export default function CheckoutPage() {
 
     try {
       const shippingAddress = `${address}, ${city}, ${state} ${zipCode}`
+      console.log('cart checkout data', {
+      id: user.id,
+      items,
+      shippingAddress
+      })
       const order = await api.createOrder(user.id, items, shippingAddress)
+      console.log('order .',order);
       clearCart()
-      router.push(`/order-confirmation/${order.id}`)
+      router.push(`/order-confirmation/${order}`)
     } catch (err) {
       setError(err.message)
     } finally {

@@ -15,7 +15,7 @@ export default function AdminOrderPage({ params }) {
   const { id } = use(params)
 
   useEffect(() => {
-    if (isAuthLoading) return
+    
 
     if (!user || user.role !== 'admin') {
       setIsLoading(false)
@@ -24,7 +24,8 @@ export default function AdminOrderPage({ params }) {
 
     const loadOrder = async () => {
       try {
-        const data = await api.getOrderById(id)
+        const data = await api.adminOrderById(id)
+        console.log('order admin detail', data) ;
         setOrder(data)
       } catch (error) {
         console.error('Failed to load order:', error)
@@ -34,13 +35,14 @@ export default function AdminOrderPage({ params }) {
     }
 
     loadOrder()
-  }, [id, user, isAuthLoading])
+  }, [id, user])
 
   const handleStatusUpdate = async (newStatus) => {
     setIsUpdating(true)
     try {
       const updated = await api.updateOrderStatus(id, newStatus)
-      setOrder(updated)
+      console.log('order update result ... ', updated) ;
+      setOrder(prev => ({ ...prev, status: newStatus }))
     } catch (error) {
       console.error('Failed to update order status:', error)
     } finally {
@@ -48,7 +50,7 @@ export default function AdminOrderPage({ params }) {
     }
   }
 
-  if (isAuthLoading || isLoading) {
+  if (isLoading) {
     return (
       <>
         <Header />
@@ -108,7 +110,7 @@ export default function AdminOrderPage({ params }) {
               </div>
               <div>
                 <p className="text-sm text-muted-foreground mb-1">Customer</p>
-                <p className="font-semibold">{order.userId}</p>
+                <p className="font-semibold">{order.customerName}</p>
               </div>
               <div>
                 <p className="text-sm text-muted-foreground mb-1">Order Date</p>
@@ -138,7 +140,7 @@ export default function AdminOrderPage({ params }) {
               </span>
             </div>
             <div className="flex gap-2">
-              {['pending', 'processing', 'shipped', 'delivered'].map((status) => (
+              {['pending', 'ship'].map((status) => (
                 <button
                   key={status}
                   onClick={() => handleStatusUpdate(status)}

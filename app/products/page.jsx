@@ -15,7 +15,7 @@ export default function ProductsPage() {
     const loadProducts = async () => {
       setIsLoading(true)
       try {
-        const data = await api.getProducts(selectedCategory === 'All' ? null : selectedCategory)
+        const data = await api.getProducts(selectedCategory === 'All' ? 'All' : selectedCategory)
         setProducts(data)
       } catch (error) {
         console.error('Failed to load products:', error)
