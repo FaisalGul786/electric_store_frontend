@@ -10,11 +10,11 @@ import { api } from '@/lib/api'
 
 export default function LoginPage() {
   const router = useRouter()
-  const { login } = useAuth()
-  const [email, setEmail] = useState('user@example.com')
-  const [password, setPassword] = useState('password123')
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
   const [error, setError] = useState('')
   const [isLoading, setIsLoading] = useState(false)
+  const {login}  =  useAuth();
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -22,9 +22,11 @@ export default function LoginPage() {
     setIsLoading(true)
 
     try {
-      const user = await api.login(email, password)
+      const res = await api.login(email, password)
+      const user = await res.json();
+      // use middleware check to see whether this route can be used by this user 
       login(user)
-      router.push('/products')
+      if(user.role) router.push('/products')
     } catch (err) {
       setError(err.message)
     } finally {
@@ -89,17 +91,6 @@ export default function LoginPage() {
             </Link>
           </p>
 
-          <div className="mt-6 pt-6 border-t border-border">
-            <p className="text-xs text-muted-foreground text-center mb-4">Demo Credentials</p>
-            <div className="space-y-2 text-xs text-muted-foreground">
-              <div>
-                <span className="font-semibold text-foreground">Customer:</span> user@example.com / password123
-              </div>
-              <div>
-                <span className="font-semibold text-foreground">Admin:</span> admin@techstore.com / password123
-              </div>
-            </div>
-          </div>
         </div>
       </Container>
     </>

@@ -21,8 +21,11 @@ export function CartProvider({ children }) {
   }, [items])
 
   const addToCart = (product) => {
+  console.log('product in cart . . .', product)
     setItems((prevItems) => {
-      const existingItem = prevItems.find((item) => item.id === product.id)
+    console.log('prev ...', prevItems)
+      const existingItem = prevItems.find((item) => item.id === product.id);
+      console.log('item ', existingItem)
       if (existingItem) {
         return prevItems.map((item) =>
           item.id === product.id
@@ -32,6 +35,8 @@ export function CartProvider({ children }) {
       }
       return [...prevItems, { ...product, quantity: 1 }]
     })
+    
+    
   }
 
   const removeFromCart = (productId) => {

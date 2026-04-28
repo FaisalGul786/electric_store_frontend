@@ -109,7 +109,7 @@ export default function OrderConfirmationPage({ params }) {
               <div>
                 <p className="text-sm text-muted-foreground mb-1">Estimated Delivery</p>
                 <p className="font-semibold">
-                  {new Date(order.estimatedDelivery).toLocaleDateString()}
+                  3 Days
                 </p>
               </div>
             </div>

@@ -10,25 +10,21 @@ import { api } from '@/lib/api'
 
 export default function EditProductPage({ params }) {
   const router = useRouter()
-  const { user, isLoading: isAuthLoading } = useAuth()
-  const [product, setProduct] = useState(null)
+  // const { user, isLoading: isAuthLoading } = useAuth()
+  const [product, setProduct] = useState({})
   const [isLoading, setIsLoading] = useState(true)
   const [isSaving, setIsSaving] = useState(false)
   const [error, setError] = useState('')
   const { id } = use(params)
 
   useEffect(() => {
-    if (isAuthLoading) return
-
-    if (!user || user.role !== 'admin') {
-      router.push('/admin')
-      return
-    }
-
+    
     const loadProduct = async () => {
       try {
         const data = await api.getProductById(id)
-        setProduct(data)
+        const productData = await data.json()
+        console.log('Fetched product by id ... ', productData)
+        setProduct(productData)
       } catch (err) {
         setError('Failed to load product')
       } finally {
@@ -37,7 +33,7 @@ export default function EditProductPage({ params }) {
     }
 
     loadProduct()
-  }, [id, user, isAuthLoading, router])
+  }, [id, router])
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -47,10 +43,7 @@ export default function EditProductPage({ params }) {
     try {
       const updatedProduct = await api.updateProduct(id, product)
       setProduct(updatedProduct)
-      // Show success message
-      setTimeout(() => {
-        router.push('/admin')
-      }, 1500)
+      
     } catch (err) {
       setError(err.message)
     } finally {
@@ -69,7 +62,7 @@ export default function EditProductPage({ params }) {
     }
   }
 
-  if (isAuthLoading || isLoading) {
+  if (isLoading) {
     return (
       <>
         <Header />
@@ -80,19 +73,19 @@ export default function EditProductPage({ params }) {
     )
   }
 
-  if (!user || user.role !== 'admin') {
-    return (
-      <>
-        <Header />
-        <Container className="py-12">
-          <div className="text-center">
-            <h1 className="text-2xl font-bold mb-2">Access Denied</h1>
-            <p className="text-muted-foreground">You don't have permission to edit products.</p>
-          </div>
-        </Container>
-      </>
-    )
-  }
+  // if (!user || user.role !== 'admin') {
+  //   return (
+  //     <>
+  //       <Header />
+  //       <Container className="py-12">
+  //         <div className="text-center">
+  //           <h1 className="text-2xl font-bold mb-2">Access Denied</h1>
+  //           <p className="text-muted-foreground">You don't have permission to edit products.</p>
+  //         </div>
+  //       </Container>
+  //     </>
+  //   )
+  // }
 
   if (!product) {
     return (
