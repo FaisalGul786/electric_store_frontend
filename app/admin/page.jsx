@@ -89,6 +89,7 @@ const url = process.env.NEXT_PUBLIC_API_URL;
 
         if (!uploadRes.ok) {
           const error = await uploadRes.json()
+          console.log('error message . . . ', error);
           throw new Error(error.error || 'Failed to upload image')
           return;
         }
