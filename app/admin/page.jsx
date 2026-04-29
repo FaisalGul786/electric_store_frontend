@@ -95,6 +95,7 @@ const url = process.env.NEXT_PUBLIC_API_URL;
         }
 
         const { url } = await uploadRes.json()
+        console.log('image url uploaded .', url );
         imageUrl = url
       }
 
