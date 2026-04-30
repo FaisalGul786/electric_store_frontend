@@ -9,7 +9,7 @@ import { useAuth } from '@/context/AuthContext'
 import { api } from '@/lib/api'
 
 export default function AdminDashboard() {
-const url = process.env.NEXT_PUBLIC_API_URL;
+
 
   // const { user, isLoading: isAuthLoading } = useAuth()
   const [activeTab, setActiveTab] = useState('products')
@@ -74,6 +74,8 @@ const url = process.env.NEXT_PUBLIC_API_URL;
     console.log('product data ... ', formData);
     setIsSubmitting(true)
     try {
+      const urlBackend = process.env.NEXT_PUBLIC_API_URL;
+	  console.log(urlBackend)
       let imageUrl = null
 
       // Upload image if provided
@@ -81,7 +83,7 @@ const url = process.env.NEXT_PUBLIC_API_URL;
         const uploadFormData = new FormData()
         uploadFormData.append('image', formData.image)
 	      console.log("form data ... ", uploadFormData)
-        const uploadRes = await fetch(`${url}/api/image/upload`, {
+        const uploadRes = await fetch(`${urlBackend}/api/image/upload`, {
           method: 'POST',
           body: uploadFormData,
           credentials: 'include'
